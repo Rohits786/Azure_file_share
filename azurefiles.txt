@@ -1,0 +1,199 @@
+
+        const string StorageAccountName = "azurefiles123";
+        const string StorageAccountKey = "2RrfxN4WtY+kDywuV0QHm/b3N4xjwxTrvfl6PJFmYZaxg2KI0sfdKaA42NPBAqb3yqjCn3n2kMMO3o6fWXSAQg==";
+
+        static void Main()
+        {
+            var storageAccount = new CloudStorageAccount(new StorageCredentials(StorageAccountName,StorageAccountKey),false);
+
+            //create azure file share
+            var share = storageAccount.CreateCloudFileClient().GetShareReference("documentslist1");
+            share.CreateIfNotExists();
+
+            var rootDir = share.GetRootDirectoryReference();
+            rootDir.GetFileReference("File.txt").UploadText("This is root");
+        }
+		
+		
+		
+		
+		
+		
+		
+		
+	
+		
+		
+		
+		 //to deploye on azure..change its path
+		 
+		 
+		   protected void Button1_Click(object sender, EventArgs e)
+        {
+           
+            if (FileUpload1.HasFile)   //check the presence of file
+            {
+                string fileExtension = System.IO.Path.GetExtension(FileUpload1.FileName);   //get the extension of file
+                 if(fileExtension.ToLower() != ".doc" || fileExtension.ToLower() != ".docx" || fileExtension.ToLower() != ".txt" || fileExtension.ToLower() != ".pdf")
+                {
+                    lblMessage.Text = "Only Upload documents file such as .doc, .docx, .txt, .pdf";
+                    lblMessage.ForeColor = System.Drawing.Color.Red;
+                }
+                    var storageAccount = new CloudStorageAccount(new StorageCredentials(StorageAccountName, StorageAccountKey), false);
+
+                //create azure file share
+                FileUpload1.SaveAs(Server.MapPath("~/Content/" + FileUpload1.FileName));   //save the files on local server
+                string path = Server.MapPath("~/Content/" + FileUpload1.FileName);   //get the path of file located on localserver
+                string filename1 = FileUpload1.PostedFile.FileName;   //get the name of filename
+                var share = storageAccount.CreateCloudFileClient().GetShareReference("documentslist1");   //create share in azure file share
+                try
+                {
+                    share.CreateIfNotExists();   //create it if not exists
+                }
+                catch (StorageException ex)
+                {
+                    throw ex;
+                }
+
+                var rootDir = share.GetRootDirectoryReference();  //Getting the root directory from azure
+         
+                    rootDir.GetFileReference(filename1).UploadFromFile(path);   //after getting file reference, files are getting stored
+                lblMessage.Text = "File Uploaded Successfully";
+                lblMessage.ForeColor = System.Drawing.Color.Green;
+            }
+            else
+            {
+                lblMessage.Text = "Please Select a file to Upload!";
+                lblMessage.ForeColor = System.Drawing.Color.Red;
+            }
+              
+            
+        }
+
+
+
+
+
+<%@ Page Title="Upload Files" Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="AzureDataStorageFile.FileUpload" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div style="height: 26px">
+    
+        <asp:FileUpload ID="FileUpload1" runat="server" />
+        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Upload" />
+    
+    </div>
+        <asp:Label ID="lblMessage" runat="server" Font-Bold ="True"></asp:Label>
+
+
+    </form>
+</body>
+</html>
+
+
+
+
+
+
+  public partial class FileUpload : System.Web.UI.Page
+    {
+        const string StorageAccountName = "azurefiles123";
+        const string StorageAccountKey = "2RrfxN4WtY+kDywuV0QHm/b3N4xjwxTrvfl6PJFmYZaxg2KI0sfdKaA42NPBAqb3yqjCn3n2kMMO3o6fWXSAQg==";
+
+
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+           
+            if (FileUpload1.HasFile)   //check the presence of file
+            {
+                string fileExtension = Path.GetExtension(FileUpload1.FileName);   //get the extension of file
+                if (fileExtension.ToLower() == ".doc" || fileExtension.ToLower() == ".docx" || fileExtension.ToLower() == ".txt" || fileExtension.ToLower() == ".pdf")
+                {
+                    
+                  
+
+                    var storageAccount = new CloudStorageAccount(new StorageCredentials(StorageAccountName, StorageAccountKey), false);
+
+                    //create azure file share
+                     FileUpload1.SaveAs(Server.MapPath("~/Content/" + FileUpload1.FileName));   //save the files on  cloud server
+                    string path = Server.MapPath("~/Content/" + FileUpload1.FileName);   //get the path of file located on cloud server
+                     
+                    string filename1 = FileUpload1.PostedFile.FileName;   //get the name of filename
+                
+                  
+                   
+                    var share = storageAccount.CreateCloudFileClient().GetShareReference("documentslist1");   //create share in azure file share
+                    try
+                    {
+                        share.CreateIfNotExists();   //create it if not exists
+                    }
+                    catch (StorageException ex)
+                    {
+                        throw ex;
+                    }
+
+                    var rootDir = share.GetRootDirectoryReference();  //Getting the root directory from azure
+
+                     rootDir.GetFileReference(filename1).UploadFromFile(path);   //after getting file reference, files are getting stored
+                                                                                  //from given path
+                   
+                    lblMessage.Text = "File Uploaded Successfully";
+                    lblMessage.ForeColor = System.Drawing.Color.Green;
+
+                    DataTable dt = new DataTable();
+                    dt.Columns.Add("File", typeof(string));
+                    dt.Columns.Add("Size", typeof(string));
+                    dt.Columns.Add("Type", typeof(string));
+
+             
+
+                    FileInfo fi = new FileInfo(filename1);
+                    dt.Rows.Add(fi.Name,fi.Extension);
+
+                    GridView1.DataSource = dt;
+                    GridView1.DataBind();
+
+                }
+           
+
+                else
+                {
+                    lblMessage.Text = "Only Upload documents file such as .doc, .docx, .txt, .pdf";
+                    lblMessage.ForeColor = System.Drawing.Color.Red;
+                }
+            }
+            else
+            {
+                lblMessage.Text = "Please Select a file to Upload!";
+                lblMessage.ForeColor = System.Drawing.Color.Red;
+            }
+              
+            
+        }
+
+        protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if(e.CommandName == "Download")
+            {
+                Response.Clear();
+                Response.ContentType = "application/octet-stream";
+                Response.AppendHeader("content-disposition","filename=" + e.CommandArgument);
+                Response.TransmitFile(Server.MapPath("~/Content/") + e.CommandArgument);
+                Response.End();
+
+            }
+        }
+    }
