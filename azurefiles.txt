@@ -1,6 +1,6 @@
 
-        const string StorageAccountName = "azurefiles123";
-        const string StorageAccountKey = "2RrfxN4WtY+kDywuV0QHm/b3N4xjwxTrvfl6PJFmYZaxg2KI0sfdKaA42NPBAqb3yqjCn3n2kMMO3o6fWXSAQg==";
+        const string StorageAccountName = "";
+        const string StorageAccountKey = "";
 
         static void Main()
         {
